@@ -14,7 +14,7 @@ public class Expire {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  private double interest;
-  private double total;
+  private long interest;
+  private long total;
   private Date start;
 }

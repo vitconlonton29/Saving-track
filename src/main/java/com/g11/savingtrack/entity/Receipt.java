@@ -18,6 +18,6 @@ public class Receipt {
   @JoinColumn(name = "passbook_id")
   private Passbook passbook;
   private Date createdAt;
-  private double amount;
+  private long amount;
   private String type;
 }

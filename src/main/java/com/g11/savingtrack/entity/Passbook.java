@@ -23,7 +23,7 @@ public class Passbook {
   @ManyToOne
   @JoinColumn(name= "period_id")
   private Period period;
-  private double amount;
+  private long amount;
   private String typeSaving;
   private Date createdAt;
 }
