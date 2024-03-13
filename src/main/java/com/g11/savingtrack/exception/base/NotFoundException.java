@@ -1,7 +1,7 @@
 package com.g11.savingtrack.exception.base;
 
 
-import static com.group11.passbookmanager.constants.PassbookManagerConstants.StatusException.*;
+import static com.g11.savingtrack.constants.PassbookManagerConstants.StatusException.*;
 
 public class NotFoundException extends BaseException {
   public NotFoundException(String id, String objectName) {
