@@ -1,4 +1,4 @@
-package com.g11.savingtrack.dtos;
+package com.g11.savingtrack.dto.response;
 
 import lombok.Data;
 

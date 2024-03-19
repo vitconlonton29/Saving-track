@@ -1,6 +1,6 @@
 package com.g11.savingtrack.service;
 
-import com.g11.savingtrack.dtos.LoginResponse;
+import com.g11.savingtrack.dto.response.LoginResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

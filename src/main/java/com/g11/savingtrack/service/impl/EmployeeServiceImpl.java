@@ -1,6 +1,6 @@
 package com.g11.savingtrack.service.impl;
 
-import com.g11.savingtrack.dtos.LoginResponse;
+import com.g11.savingtrack.dto.response.LoginResponse;
 import com.g11.savingtrack.entity.Employee;
 import com.g11.savingtrack.repository.EmployeeRepository;
 import com.g11.savingtrack.security.JwtUtilities;
