@@ -1,5 +1,6 @@
 package com.g11.savingtrack.entity;
 
+import com.g11.savingtrack.dto.request.PassbookRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,12 +19,15 @@ public class Passbook {
   @JoinColumn(name = "customer_id")
   private Customer customer;
   @ManyToOne
-  @JoinColumn(name = "expire_id")
-  private Expire expire;
-  @ManyToOne
-  @JoinColumn(name= "period_id")
+  @JoinColumn(name = "period_id")
   private Period period;
   private long amount;
-  private String typeSaving;
   private Date createdAt;
+
+  public static Passbook from(PassbookRequest request) {
+    Passbook p = new Passbook();
+    p.amount = request.getAmount();
+    p.createdAt = request.getCreatedAt();
+    return p;
+  }
 }
