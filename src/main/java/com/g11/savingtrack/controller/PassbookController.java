@@ -6,10 +6,9 @@ import com.g11.savingtrack.dto.response.PassbookResponse;
 import com.g11.savingtrack.service.PassbookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import static com.g11.savingtrack.constants.PassbookManagerConstants.MessageCode.*;
 
@@ -28,5 +27,20 @@ public class PassbookController {
           SUCCESS,
           passbookService.create(request)
     );
+  }
+
+  @GetMapping("/BackSaveById/{id}")
+  public ResponseEntity<?> getPassbookByid(@PathVariable int id){
+    return new ResponseEntity<>(passbookService.getPassbookById(id), HttpStatus.OK);
+  }
+
+  @GetMapping("/BackSave/{cccd}")
+  public ResponseEntity<?> getPassbooksByCccd(@PathVariable String cccd){
+    return  new ResponseEntity<>(passbookService.getPassbooksByCccd(cccd),HttpStatus.OK);
+  }
+
+  @PatchMapping("/BackSaveById/{id}")
+  public ResponseEntity<?> withdrawPassbook(@PathVariable int id){
+    return new ResponseEntity<>(passbookService.withdrawPassbook(id),HttpStatus.OK);
   }
 }

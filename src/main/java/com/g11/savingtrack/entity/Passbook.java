@@ -23,6 +23,8 @@ public class Passbook {
   private Period period;
   private long amount;
   private Date createdAt;
+  private Date withdrawAt;
+  private String status;
 
   public static Passbook from(PassbookRequest request) {
     Passbook p = new Passbook();
