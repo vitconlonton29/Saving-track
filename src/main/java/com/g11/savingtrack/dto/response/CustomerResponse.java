@@ -8,12 +8,14 @@ import java.util.Date;
 public class CustomerResponse {
   private String id;
   private String identityCardNumber;
-  private Date dob;
   private String fullName;
   private String gender;
   private String email;
+  private String phoneNumber;
   private String address;
   private String career;
-  private double income;
+  private long income;
   private String taxCode;
+  private Date dob;
+
 }

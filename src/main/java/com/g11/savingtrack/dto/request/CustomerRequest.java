@@ -7,12 +7,13 @@ import java.util.Date;
 @Data
 public class CustomerRequest {
   private String identityCardNumber;
-  private Date dob;
   private String fullName;
   private String gender;
   private String email;
   private String address;
+  private String phoneNumber;
+  private Date dob;
   private String career;
-  private double income;
+  private long income;
   private String taxCode;
 }

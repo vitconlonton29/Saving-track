@@ -1,5 +1,6 @@
 package com.g11.savingtrack.entity;
 
+import com.g11.savingtrack.dto.request.PassbookRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,10 +17,9 @@ public class Customer {
   private String fullName;
   private String gender;
   private String email;
+  private String phoneNumber;
   private String address;
   private String career;
-  private double income;
+  private long income;
   private String taxCode;
-
-
 }
