@@ -10,8 +10,6 @@ public class PassbookRequest {
   private int employeeId;
   private int customerId;
   private int month;
-  private double interestRate;
   private long amount;
-  private String typeSaving;
   private Date createdAt;
 }
