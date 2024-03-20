@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface EmployeeService {
-    ResponseEntity<LoginResponse> login(String username, String password) throws Exception;
+    LoginResponse login(String username, String password) ;
 }

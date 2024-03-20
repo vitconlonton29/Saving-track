@@ -1,5 +1,6 @@
 package com.g11.savingtrack.exception;
 import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
+import com.g11.savingtrack.exception.employee.UsernamePasswordException;
 import com.g11.savingtrack.exception.passbook.PassbookAlreadyWithdaw;
 import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,16 @@ import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
-
+ @ExceptionHandler(UsernamePasswordException.class)
+ public ResponseEntity<CustomErrorResponse> handleUsernamePasswordException(UsernamePasswordException ex, WebRequest request) {
+     CustomErrorResponse error = new CustomErrorResponse();
+     error.setCode(ex.getCode());
+     error.setStatus(ex.getStatus());
+     error.setParams(ex.getParams());
+     error.setMessage(ex.getMessage());
+     error.setPath(request.getDescription(false));
+     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+ }
     @ExceptionHandler(PassbookNotFoundException.class)
     public ResponseEntity<CustomErrorResponse> handlePassbookNotFoundExceptionn(PassbookNotFoundException ex, WebRequest request) {
         CustomErrorResponse error = new CustomErrorResponse();
