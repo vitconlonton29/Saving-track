@@ -2,6 +2,7 @@ package com.g11.savingtrack.controller;
 
 import com.g11.savingtrack.dto.ResponseGeneral;
 import com.g11.savingtrack.dto.request.PassbookRequest;
+import com.g11.savingtrack.dto.response.InterestResponse;
 import com.g11.savingtrack.dto.response.PassbookResponse;
 import com.g11.savingtrack.service.PassbookService;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +31,27 @@ public class PassbookController {
   }
 
   @GetMapping("/BackSaveById/{id}")
-  public ResponseEntity<?> getPassbookByid(@PathVariable int id){
+  public ResponseEntity<?> getPassbookByid(@PathVariable int id) {
     return new ResponseEntity<>(passbookService.getPassbookById(id), HttpStatus.OK);
   }
 
   @GetMapping("/BackSave/{cccd}")
-  public ResponseEntity<?> getPassbooksByCccd(@PathVariable String cccd){
-    return  new ResponseEntity<>(passbookService.getPassbooksByCccd(cccd),HttpStatus.OK);
+  public ResponseEntity<?> getPassbooksByCccd(@PathVariable String cccd) {
+    return new ResponseEntity<>(passbookService.getPassbooksByCccd(cccd), HttpStatus.OK);
   }
 
   @PatchMapping("/BackSaveById/{id}")
-  public ResponseEntity<?> withdrawPassbook(@PathVariable int id){
-    return new ResponseEntity<>(passbookService.withdrawPassbook(id),HttpStatus.OK);
+  public ResponseEntity<?> withdrawPassbook(@PathVariable int id) {
+    return new ResponseEntity<>(passbookService.withdrawPassbook(id), HttpStatus.OK);
+  }
+
+  @GetMapping("/{id}/interest")
+  public ResponseGeneral<InterestResponse> interest(@PathVariable int id) {
+    log.info("(interest) id:{}", id);
+
+    return ResponseGeneral.ofCreated(
+          SUCCESS,
+          passbookService.getInterest(id)
+    );
   }
 }

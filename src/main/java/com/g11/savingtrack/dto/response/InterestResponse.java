@@ -1,9 +1,15 @@
 package com.g11.savingtrack.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
+@AllArgsConstructor
 public class InterestResponse {
-  private String passbookId;
+  private int passbookId;
+  private String customerName;
   private long amount;
   private int month;
   private double interestRate;
