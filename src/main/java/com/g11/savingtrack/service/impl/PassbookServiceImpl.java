@@ -1,6 +1,7 @@
 package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.PassbookRequest;
+import com.g11.savingtrack.dto.response.InterestResponse;
 import com.g11.savingtrack.dto.response.PassbookResponse;
 import com.g11.savingtrack.entity.Customer;
 import com.g11.savingtrack.entity.Employee;
@@ -55,25 +56,30 @@ public class PassbookServiceImpl implements PassbookService {
 
   }
 
-  public PassbookResponse getPassbookById(int id){
+  public PassbookResponse getPassbookById(int id) {
     Passbook passbook = passbookRepository.findById(id).orElseThrow(() -> new PassbookNotFoundException());
     return PassbookResponse.from(passbook);
   }
 
-  public List<Passbook> getPassbooksByCccd(String cccd){
+  public List<Passbook> getPassbooksByCccd(String cccd) {
     List<Passbook> list = passbookRepository.getPassbooksByCCCD(cccd);
-    if(list.isEmpty()) throw new PassbookNotFoundException();
+    if (list.isEmpty()) throw new PassbookNotFoundException();
     else return list;
   }
 
-  public Passbook withdrawPassbook(int id){
+  public Passbook withdrawPassbook(int id) {
     Passbook passbook = passbookRepository.findById(id).orElseThrow(() -> new PassbookNotFoundException());
-    if(passbook.getStatus().equals("0")) throw new PassbookAlreadyWithdaw();
-    else{
+    if (passbook.getStatus().equals("0")) throw new PassbookAlreadyWithdaw();
+    else {
       passbook.setStatus("0");
       passbook.setWithdrawAt(new Date());
       return passbookRepository.save(passbook);
     }
   }
 
+  @Override
+  public InterestResponse getInterest(int id) {
+
+    return null;
+  }
 }
