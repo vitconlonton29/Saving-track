@@ -8,11 +8,10 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Employee {
+public class SavingProduct {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  private String username;
-  private String password;
-  private String role;
+  private int term;
+  private double interestRate;
 }

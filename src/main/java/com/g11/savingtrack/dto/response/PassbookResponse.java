@@ -18,7 +18,7 @@ public class PassbookResponse {
   public static PassbookResponse from(Passbook passbook) {
     PassbookResponse pr = new PassbookResponse();
     pr.id = passbook.getId();
-    pr.employeeId = passbook.getEmployee().getId();
+    pr.employeeId = passbook.getAccount().getId();
     pr.customerId = passbook.getCustomer().getId();
     pr.month = passbook.getPeriod().getMonth();
     pr.interestRate = passbook.getPeriod().getInterestRate();

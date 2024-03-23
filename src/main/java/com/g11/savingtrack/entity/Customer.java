@@ -13,13 +13,15 @@ public class Customer {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   private String identityCardNumber;
-  private Date dob;
-  private String fullName;
-  private String gender;
+  private String accountNumber;
+  private String pin;
+  private Long balance;
   private String email;
   private String phoneNumber;
+  private Date dob;
+  private String fullName;
   private String address;
+  private String gender;
   private String career;
   private long income;
-  private String taxCode;
 }

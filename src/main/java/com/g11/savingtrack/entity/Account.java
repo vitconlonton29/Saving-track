@@ -8,11 +8,11 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Period {
+public class Account {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  private int month;
-  private double interestRate;
-
+  private String accountNumber;
+  private String password;
+  private String role;
 }

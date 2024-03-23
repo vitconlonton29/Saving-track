@@ -1,7 +1,5 @@
 package com.g11.savingtrack.exception;
-import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
 import com.g11.savingtrack.exception.employee.UsernamePasswordException;
-import com.g11.savingtrack.exception.passbook.PassbookAlreadyWithdaw;
 import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

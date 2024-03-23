@@ -13,18 +13,15 @@ public class Passbook {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   @ManyToOne
-  @JoinColumn(name = "employee_id")
-  private Employee employee;
-  @ManyToOne
   @JoinColumn(name = "customer_id")
   private Customer customer;
   @ManyToOne
-  @JoinColumn(name = "period_id")
-  private Period period;
+  @JoinColumn(name = "saving_product_id")
+  private SavingProduct savingProduct;
   private long amount;
+  private String savingType;
+  private String paymentMethod;
   private Date createdAt;
-  private Date withdrawAt;
-  private String status;
 
   public static Passbook from(PassbookRequest request) {
     Passbook p = new Passbook();

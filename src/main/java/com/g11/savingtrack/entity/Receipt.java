@@ -13,7 +13,7 @@ public class Receipt {
   private int id;
   @ManyToOne
   @JoinColumn(name = "employee_id")
-  private Employee employee;
+  private Account account;
   @ManyToOne
   @JoinColumn(name = "passbook_id")
   private Passbook passbook;

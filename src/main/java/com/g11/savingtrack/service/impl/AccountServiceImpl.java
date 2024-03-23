@@ -1,16 +1,12 @@
 package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.response.LoginResponse;
-import com.g11.savingtrack.entity.Employee;
-import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
-import com.g11.savingtrack.exception.employee.EmployeeNotFoundException;
-import com.g11.savingtrack.exception.employee.UsernamePasswordException;
-import com.g11.savingtrack.repository.EmployeeRepository;
+import com.g11.savingtrack.entity.Account;
+import com.g11.savingtrack.exception.account.UsernamePasswordIncorrectException;
+import com.g11.savingtrack.repository.AccountRepository;
 import com.g11.savingtrack.security.JwtUtilities;
-import com.g11.savingtrack.service.EmployeeService;
+import com.g11.savingtrack.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,18 +20,18 @@ import java.util.List;
 
 @Service
 
-public class EmployeeServiceImpl implements EmployeeService {
+public class AccountServiceImpl implements AccountService {
     @Autowired
-    private EmployeeRepository userRepository;
+    private AccountRepository userRepository;
     @Autowired
     private final AuthenticationManager authenticationManager ;
     @Autowired
-    private final EmployeeRepository iUserRepository ;
+    private final AccountRepository iUserRepository ;
     @Autowired
     private final JwtUtilities jwtUtilities ;
 
 
-    public EmployeeServiceImpl(EmployeeRepository userRepository, AuthenticationManager authenticationManager, EmployeeRepository iUserRepository, JwtUtilities jwtUtilities) {
+    public AccountServiceImpl(AccountRepository userRepository, AuthenticationManager authenticationManager, AccountRepository iUserRepository, JwtUtilities jwtUtilities) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.iUserRepository = iUserRepository;
@@ -50,18 +46,18 @@ public class EmployeeServiceImpl implements EmployeeService {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            Employee user = iUserRepository.findByUsername(authentication.getName())
+            Account user = iUserRepository.findByUsername(authentication.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             List<String> rolesNames = new ArrayList<>();
             rolesNames.add(user.getRole());
-            String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
+            String token = jwtUtilities.generateToken(user.getAccountNumber(), rolesNames);
             return new LoginResponse(token);
         } catch (UsernameNotFoundException ex) {
             // Trường hợp không tìm thấy người dùng
             throw ex; // Re-throw ngoại lệ để xử lý ở nơi gọi
         } catch (AuthenticationException ex) {
             // Trường hợp sai tên người dùng hoặc mật khẩu
-            throw new UsernamePasswordException();
+            throw new UsernamePasswordIncorrectException();
         } catch (Exception ex) {
             // Trường hợp lỗi ngoại lệ khác
             System.out.println("ạih");
