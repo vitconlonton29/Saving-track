@@ -1,5 +1,6 @@
 package com.g11.savingtrack.entity;
 
+import com.g11.savingtrack.dto.request.PassbookRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,5 +22,13 @@ public class Passbook {
   private String paymentMethod;
   private Date createdAt;
 
+  public static Passbook from(PassbookRequest request) {
+
+    Passbook p = new Passbook();
+    p.amount = request.getAmount();
+    p.createdAt = request.getCreatedAt();
+    p.paymentMethod = request.getPaymentMethod();
+    return p;
+  }
 
 }

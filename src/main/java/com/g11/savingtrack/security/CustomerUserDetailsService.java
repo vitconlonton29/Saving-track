@@ -20,23 +20,23 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CustomerUserDetailsService implements UserDetailsService {
 
-    private final AccountRepository accountRepository;
+  private final AccountRepository accountRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> optionalEmployee = accountRepository.findByUsername(username);
-        Account account = optionalEmployee.orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Optional<Account> optionalEmployee = accountRepository.findByAccountNumber(username);
+    Account account = optionalEmployee.orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
-        // Tạo danh sách quyền từ role của Employee
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(account.getRole()));
+    // Tạo danh sách quyền từ role của Employee
+    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(account.getRole()));
 
-        // Tạo UserDetails từ thông tin Employee
-        return User.withUsername(account.getAccountNumber())
-                .password(account.getPassword())
-                .authorities(authorities)
-                .build();
+    // Tạo UserDetails từ thông tin Employee
+    return User.withUsername(account.getAccountNumber())
+          .password(account.getPassword())
+          .authorities(authorities)
+          .build();
 
-    }
+  }
 
 
 }
