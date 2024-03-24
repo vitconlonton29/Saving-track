@@ -11,11 +11,10 @@ public class Receipt {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-
   @ManyToOne
   @JoinColumn(name = "passbook_id")
   private Passbook passbook;
   private Date createdAt;
   private long amount;
-  private String type;
+  private String code;
 }
