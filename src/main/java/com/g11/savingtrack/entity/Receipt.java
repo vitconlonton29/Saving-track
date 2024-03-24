@@ -11,9 +11,7 @@ public class Receipt {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  @ManyToOne
-  @JoinColumn(name = "employee_id")
-  private Account account;
+
   @ManyToOne
   @JoinColumn(name = "passbook_id")
   private Passbook passbook;

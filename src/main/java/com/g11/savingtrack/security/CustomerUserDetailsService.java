@@ -24,14 +24,14 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Optional<Account> optionalEmployee = accountRepository.findByAccountNumber(username);
+    Optional<Account> optionalEmployee = accountRepository.findByUsername(username);
     Account account = optionalEmployee.orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
     // Tạo danh sách quyền từ role của Employee
     List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(account.getRole()));
 
     // Tạo UserDetails từ thông tin Employee
-    return User.withUsername(account.getAccountNumber())
+    return User.withUsername(account.getUsername())
           .password(account.getPassword())
           .authorities(authorities)
           .build();

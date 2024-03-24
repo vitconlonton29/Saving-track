@@ -12,7 +12,7 @@ public class Account {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  private String accountNumber;
+  private String username;
   private String password;
   private String role;
 }
