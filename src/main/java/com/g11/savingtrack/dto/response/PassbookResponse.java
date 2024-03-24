@@ -13,7 +13,8 @@ import java.util.Date;
 public class PassbookResponse {
   private int id;
   private int customerId;
-  private int savingProductId;
+  private int term;
+  private double interestRate;
   private long amount;
   private String paymentMethod;
   private Date createdAt;
@@ -22,7 +23,8 @@ public class PassbookResponse {
     PassbookResponse pr = new PassbookResponse();
     pr.id = passbook.getId();
     pr.customerId = passbook.getCustomer().getId();
-    pr.savingProductId = passbook.getSavingProduct().getId();
+    pr.term = passbook.getSavingProduct().getTerm();
+    pr.interestRate = passbook.getSavingProduct().getInterestRate();
     pr.amount = passbook.getAmount();
     pr.createdAt = passbook.getCreatedAt();
 

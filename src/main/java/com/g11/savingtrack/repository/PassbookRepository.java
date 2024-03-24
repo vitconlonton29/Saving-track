@@ -12,4 +12,9 @@ import java.util.List;
 public interface PassbookRepository extends JpaRepository<Passbook, Integer> {
     @Query("SELECT p from Passbook p where p.customer.identityCardNumber = :cccd")
     List<Passbook> getPassbooksByCCCD(@Param("cccd") String cccd);
+
+    @Query("SELECT p from Passbook p where p.customer.id = :customerId")
+    List<Passbook> findAllByCustomerId(@Param("customerId") int customerId);
+
+
 }

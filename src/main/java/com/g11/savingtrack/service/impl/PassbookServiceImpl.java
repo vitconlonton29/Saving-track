@@ -6,6 +6,7 @@ import com.g11.savingtrack.entity.Customer;
 import com.g11.savingtrack.entity.Passbook;
 import com.g11.savingtrack.entity.SavingProduct;
 import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
+import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import com.g11.savingtrack.exception.savingproduct.SavingProductNotFoundException;
 import com.g11.savingtrack.repository.CustomerRepository;
 import com.g11.savingtrack.repository.PassbookRepository;
@@ -15,7 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @Slf4j
@@ -41,5 +45,27 @@ public class PassbookServiceImpl implements PassbookService {
 
     return PassbookResponse.from(passbookRepository.save(passbook));
 
+  }
+
+  @Override
+  public List<PassbookResponse> list(int id) {
+    log.info("(list)");
+
+    List<Passbook> passbooks = passbookRepository.findAllByCustomerId(id);
+    List<PassbookResponse> passbookResponses = new ArrayList<>();
+    for (Passbook p : passbooks) {
+      passbookResponses.add(PassbookResponse.from(p));
+    }
+
+    return passbookResponses;
+  }
+
+  @Override
+  public PassbookResponse detail(int passbookId){
+    log.info("detail");
+
+    Passbook passbook = passbookRepository.findById(passbookId).orElseThrow(PassbookNotFoundException::new);
+
+    return PassbookResponse.from(passbook);
   }
 }

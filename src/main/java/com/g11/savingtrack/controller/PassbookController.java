@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.g11.savingtrack.constants.PassbookManagerConstants.MessageCode.*;
 
 @RestController
@@ -42,6 +44,26 @@ public class PassbookController {
     return ResponseGeneral.ofCreated(
           SUCCESS,
           withdrawalService.withDraw(request)
+    );
+  }
+
+  @GetMapping
+  public ResponseGeneral<List<PassbookResponse>> list(@PathVariable int id) {
+    log.info("(list)");
+
+    return ResponseGeneral.ofCreated(
+          SUCCESS,
+          passbookService.list(id)
+    );
+  }
+
+  @GetMapping("/{passbookId}")
+  public ResponseGeneral<PassbookResponse> detail(@PathVariable int passbookId) {
+    log.info("detail");
+
+    return ResponseGeneral.ofCreated(
+          SUCCESS,
+          passbookService.detail(passbookId)
     );
   }
 
