@@ -1,8 +1,6 @@
 package com.g11.savingtrack.controller;
 
 import com.g11.savingtrack.dto.ResponseGeneral;
-import com.g11.savingtrack.dto.request.PassbookRequest;
-import com.g11.savingtrack.dto.response.PassbookResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

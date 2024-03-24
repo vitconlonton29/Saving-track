@@ -45,4 +45,8 @@ public class PassbookManagerConstants {
     public static final String INVALID_DATE_FORMAT = "com.group11.passbook-manager.validation.user.invalidDateFormat";
     public static final String NOT_NULL_OR_EMPTY = " can't be null, empty, or blank";
   }
+
+  public static class ValueOfBank{
+    public static final double INTEREST_RATE_NO_TERM = 0.5;
+  }
 }

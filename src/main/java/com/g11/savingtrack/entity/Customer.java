@@ -1,6 +1,5 @@
 package com.g11.savingtrack.entity;
 
-import com.g11.savingtrack.dto.request.PassbookRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 
