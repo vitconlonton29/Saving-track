@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SavingProductRepository extends JpaRepository<SavingProduct, Integer> {
+  SavingProduct findByTerm(int term);
 }
