@@ -9,6 +9,7 @@ public class InterestRequest {
   private long amount;
   private double interestRate;
   private int term;
+  private int paymentMethod;
   private Date startDate;
   private Date endDate;
 }

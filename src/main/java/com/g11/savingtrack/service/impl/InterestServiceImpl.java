@@ -25,6 +25,7 @@ public class InterestServiceImpl implements InterestService {
     double rate = request.getInterestRate();
     long amount = request.getAmount();
     long interest = 0;
+    int paymentMethod = request.getPaymentMethod();
 
     Date startDate = request.getStartDate();
     Date endDate = request.getEndDate();
@@ -50,8 +51,10 @@ public class InterestServiceImpl implements InterestService {
         //tinh lai
         interest = (long) Math.ceil((amount * rate / 100 / 365) * days);
         log.info("lai trong 1 ky han: {}", interest);
-        //cong goc
-        amount += interest;
+        //neu phuong thuc tra la la cong goc
+        if (paymentMethod == 1) {
+          amount += interest;
+        }
         log.info("goc sau cong: {}", amount);
         //ngay tinh = ngay bat dau ky han truoc + so thang cua ky han
         startDate = addMonthsToDate(startDate, month);
