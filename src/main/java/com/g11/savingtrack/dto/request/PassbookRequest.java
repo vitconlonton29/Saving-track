@@ -13,6 +13,6 @@ public class PassbookRequest {
   private int customerId;
   private int savingProductId;
   private long amount;
-  private String paymentMethod;
+  private int paymentMethod;
   private Date createdAt;
 }

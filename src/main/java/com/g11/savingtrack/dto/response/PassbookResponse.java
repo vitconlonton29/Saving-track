@@ -16,7 +16,7 @@ public class PassbookResponse {
   private int term;
   private double interestRate;
   private long amount;
-  private String paymentMethod;
+  private int paymentMethod;
   private Date createdAt;
 
   public static PassbookResponse from(Passbook passbook) {
