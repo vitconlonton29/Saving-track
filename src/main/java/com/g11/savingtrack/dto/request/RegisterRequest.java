@@ -15,6 +15,5 @@ public class RegisterRequest {
     private String identityCardNumber;
     private String accountNumber;
     private String pin;
-    private String email;
     private String phoneNumber;
 }

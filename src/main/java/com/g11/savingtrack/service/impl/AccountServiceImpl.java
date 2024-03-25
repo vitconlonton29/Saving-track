@@ -88,9 +88,7 @@ public class AccountServiceImpl implements AccountService {
   public RegisterResponse register(RegisterRequest registerRequest){
     Customer customer= customerRepository.findByIdentityCardNumber(registerRequest.getIdentityCardNumber()).orElseThrow(() -> new CustomerNotFoundException());
     if(customer.getAccount()==null) throw new CustomerAlreadyExistException();
-    if(!customer.getEmail().equals( registerRequest.getEmail())){
-      throw new CustomerBadRequestException("email is conflic");
-    } else if (!customer.getAccountNumber().equals(registerRequest.getAccountNumber())) {
+    if (!customer.getAccountNumber().equals(registerRequest.getAccountNumber())) {
       throw new CustomerBadRequestException("account number is conflic");
     }else if(!customer.getPhoneNumber().equals(registerRequest.getPhoneNumber())){
       throw  new CustomerBadRequestException("phong number is conflic");
@@ -98,8 +96,8 @@ public class AccountServiceImpl implements AccountService {
     Random random = new Random();
     int rad= random.nextInt(900000) + 100000;
     EmailUtils emailUtils = new EmailUtils();
-    emailUtils.setSubject(registerRequest.getEmail());
-    emailUtils.setRecipient(registerRequest.getEmail());
+    emailUtils.setSubject(customer.getEmail());
+    emailUtils.setRecipient(customer.getEmail());
     emailUtils.setMsgBody("đội ơn bạn đã sử  dụng dịch vụ của chúng tôi mã xác nhận của bạn là "+String.valueOf(rad));
     Boolean statusSendMail = emailService.sendSimpleMail(emailUtils);
     Otp otp = new Otp();
