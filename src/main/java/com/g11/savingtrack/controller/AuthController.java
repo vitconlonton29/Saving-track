@@ -4,11 +4,13 @@ import com.g11.savingtrack.dto.ResponseGeneral;
 import com.g11.savingtrack.dto.request.LoginRequest;
 import com.g11.savingtrack.dto.request.RegisterRequest;
 import com.g11.savingtrack.dto.request.VerifyRequest;
+import com.g11.savingtrack.dto.response.CustomerResponse;
 import com.g11.savingtrack.dto.response.LoginResponse;
 import com.g11.savingtrack.dto.response.RegisterResponse;
 import com.g11.savingtrack.dto.response.VerifyResponse;
 import com.g11.savingtrack.service.AccountService;
 import com.g11.savingtrack.service.VerifyService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +52,14 @@ public class AuthController {
         return ResponseGeneral.ofCreated(
                 SUCCESS,
                 verifyService.verify(verifyRequest)
+        );
+    }
+    @GetMapping("customer")
+    public ResponseGeneral<CustomerResponse> verify(HttpServletRequest request) {
+
+        return ResponseGeneral.ofCreated(
+                SUCCESS,
+                userService.customerinfor(request)
         );
     }
 }
