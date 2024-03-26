@@ -19,7 +19,7 @@ public class Passbook {
   @JoinColumn(name = "saving_product_id")
   private SavingProduct savingProduct;
   private long amount;
-  private String paymentMethod;
+  private int paymentMethod;
   private Date createdAt;
 
   public static Passbook from(PassbookRequest request) {

@@ -1,4 +1,5 @@
 package com.g11.savingtrack.security;
+import com.g11.savingtrack.utils.ShortTokenReceipt;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,12 @@ public class JwtUtilities{
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
+    public String generateTokenShort(String email , ShortTokenReceipt shortTokenReceipt) {
+
+        return Jwts.builder().setSubject(email).claim("values",shortTokenReceipt.toLinkedHashMap()).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
@@ -81,6 +88,14 @@ public class JwtUtilities{
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
         {return bearerToken.substring(7,bearerToken.length()); } // The part after "Bearer "
         return null;
+    }
+    public <T> T getClaimValueFromToken(String token, String claimName, Class<T> valueType) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get(claimName, valueType);
+    }
+    public String getTokenShort (HttpServletRequest httpServletRequest) {
+        final String bearerToken = httpServletRequest.getHeader("ShortToken");
+        return bearerToken;
     }
 
 }

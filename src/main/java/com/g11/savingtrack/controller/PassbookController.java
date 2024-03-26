@@ -2,13 +2,20 @@ package com.g11.savingtrack.controller;
 
 import com.g11.savingtrack.dto.ResponseGeneral;
 import com.g11.savingtrack.dto.request.PassbookRequest;
+import com.g11.savingtrack.dto.request.VerifyWithdrawalRequest;
 import com.g11.savingtrack.dto.request.WithdrawalRequest;
 import com.g11.savingtrack.dto.response.PassbookResponse;
+import com.g11.savingtrack.dto.response.VerifyWithdrawalResponse;
 import com.g11.savingtrack.dto.response.WithdrawalResponse;
+import com.g11.savingtrack.security.JwtUtilities;
 import com.g11.savingtrack.service.PassbookService;
 import com.g11.savingtrack.service.WithdrawalService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,6 +72,11 @@ public class PassbookController {
           SUCCESS,
           passbookService.detail(passbookId)
     );
+  }
+  @PreAuthorize("isAuthenticated()")
+  @PostMapping("/{passbookId}/verify")
+  public ResponseGeneral<VerifyWithdrawalResponse> verify(@PathVariable int passbookId, HttpServletRequest request, @RequestBody VerifyWithdrawalRequest verifyWithdrawalRequest) {
+    return ResponseGeneral.ofCreated(SUCCESS,passbookService.withdraw(request,verifyWithdrawalRequest,passbookId));
   }
 
 }
