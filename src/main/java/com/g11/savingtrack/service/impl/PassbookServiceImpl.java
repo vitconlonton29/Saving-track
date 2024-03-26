@@ -1,24 +1,31 @@
 package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.PassbookRequest;
+import com.g11.savingtrack.dto.request.VerifyWithdrawalRequest;
 import com.g11.savingtrack.dto.response.PassbookResponse;
-import com.g11.savingtrack.entity.Customer;
-import com.g11.savingtrack.entity.Passbook;
-import com.g11.savingtrack.entity.SavingProduct;
+import com.g11.savingtrack.dto.response.VerifyWithdrawalResponse;
+import com.g11.savingtrack.entity.*;
+import com.g11.savingtrack.exception.Otp.OtpNotFoundException;
+import com.g11.savingtrack.exception.account.AccountNotFoundException;
 import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
 import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import com.g11.savingtrack.exception.savingproduct.SavingProductNotFoundException;
-import com.g11.savingtrack.repository.CustomerRepository;
-import com.g11.savingtrack.repository.PassbookRepository;
-import com.g11.savingtrack.repository.SavingProductRepository;
+import com.g11.savingtrack.repository.*;
+import com.g11.savingtrack.security.JwtUtilities;
 import com.g11.savingtrack.service.PassbookService;
+import com.g11.savingtrack.utils.ShortTokenReceipt;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.g11.savingtrack.exception.account.UsernamePasswordIncorrectException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 @Service
@@ -28,6 +35,10 @@ public class PassbookServiceImpl implements PassbookService {
   private final PassbookRepository passbookRepository;
   private final CustomerRepository customerRepository;
   private final SavingProductRepository savingProductRepository;
+  private final JwtUtilities jwtUtilities;
+  private final OtpRepository otpRepository;
+  private final AccountRepository accountRepository;
+  private final ReceiptRepository receiptRepository;
 
   @Override
   public PassbookResponse create(PassbookRequest request) {
@@ -67,5 +78,71 @@ public class PassbookServiceImpl implements PassbookService {
     Passbook passbook = passbookRepository.findById(passbookId).orElseThrow(PassbookNotFoundException::new);
 
     return PassbookResponse.from(passbook);
+  }
+
+
+  @Override
+  public VerifyWithdrawalResponse withdraw(HttpServletRequest request, VerifyWithdrawalRequest verifyWithdrawalRequest, int passbookId){
+
+    String tokenShort=jwtUtilities.getTokenShort(request);
+    LinkedHashMap shortTokenReceiptHashMap= jwtUtilities.getClaimValueFromToken(tokenShort, "values", LinkedHashMap.class);
+    ShortTokenReceipt shortTokenReceipt= ShortTokenReceipt.fromLinkedHashMap(shortTokenReceiptHashMap);
+
+    Otp otp= otpRepository.findById(shortTokenReceipt.getIdOtp()).orElseThrow(()->  new OtpNotFoundException());
+    LocalDateTime dateTime1 = LocalDateTime.now();
+    LocalDateTime dateTime2 = otp.getDateTimeCreate();
+    Duration duration = Duration.between(dateTime1, dateTime2);
+    long seconds = Math.abs(duration.getSeconds());
+    if(seconds>60 ||!String.valueOf(verifyWithdrawalRequest.getCode()).equals(otp.getCode())){
+      throw  new OtpNotFoundException();
+    }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+    Passbook passbook = passbookRepository.findById(shortTokenReceipt.getIdPassbook()).orElseThrow(PassbookNotFoundException::new);
+    List<Customer> customer = customerRepository.findByAccountId(account.getId());
+    if(customer.size()==0) throw  new CustomerNotFoundException();
+
+
+    long amountWithdraw;
+    long amount = passbook.getAmount();
+    long balance = customer.get(0).getBalance();
+
+    if (shortTokenReceipt.isAll()) {
+      amountWithdraw = passbook.getAmount();
+    } else {
+      amountWithdraw = shortTokenReceipt.getAmount();
+
+    }
+
+
+    passbook.setAmount(amount - amountWithdraw);
+    customer.get(0).setBalance(balance + amountWithdraw);
+    passbookRepository.save(passbook);
+    customerRepository.save(customer.get(0));
+
+    String code = generateRandomString();
+
+    Receipt receipt = new Receipt();
+    receipt.setAmount(amount);
+    receipt.setPassbook(passbook);
+    receipt.setCode(code);
+    receipt.setCreatedAt(new Date());
+    Receipt receiptNew=receiptRepository.save(receipt);
+
+
+    return new VerifyWithdrawalResponse(customer.get(0).getId(),passbook.getId(),amount,code,receiptNew.getCreatedAt());
+  }
+  private String generateRandomString() {
+    String uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    StringBuilder sb = new StringBuilder();
+    Random random = new Random();
+
+    for (int i = 0; i < 10; i++) {
+      char randomChar = uppercaseLetters.charAt(random.nextInt(uppercaseLetters.length()));
+      sb.append(randomChar);
+    }
+
+    return sb.toString();
   }
 }

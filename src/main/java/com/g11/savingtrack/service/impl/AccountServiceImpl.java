@@ -1,11 +1,13 @@
 package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.RegisterRequest;
+import com.g11.savingtrack.dto.response.CustomerResponse;
 import com.g11.savingtrack.dto.response.LoginResponse;
 import com.g11.savingtrack.dto.response.RegisterResponse;
 import com.g11.savingtrack.entity.Account;
 import com.g11.savingtrack.entity.Customer;
 import com.g11.savingtrack.entity.Otp;
+import com.g11.savingtrack.exception.account.AccountNotFoundException;
 import com.g11.savingtrack.exception.account.UsernamePasswordIncorrectException;
 import com.g11.savingtrack.exception.customer.CustomerAlreadyExistException;
 import com.g11.savingtrack.exception.customer.CustomerBadRequestException;
@@ -17,6 +19,7 @@ import com.g11.savingtrack.service.AccountService;
 import com.g11.savingtrack.service.EmailService;
 import com.g11.savingtrack.service.OtpService;
 import com.g11.savingtrack.utils.EmailUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +51,6 @@ public class AccountServiceImpl implements AccountService {
   private final AccountRepository iUserRepository;
   @Autowired
   private final JwtUtilities jwtUtilities;
-
 
   public AccountServiceImpl(AccountRepository userRepository, AuthenticationManager authenticationManager, AccountRepository iUserRepository, JwtUtilities jwtUtilities) {
     this.userRepository = userRepository;
@@ -109,6 +111,17 @@ public class AccountServiceImpl implements AccountService {
       throw  new CustomerNotFoundException();
     }
     return new RegisterResponse("succes");
+  }
+
+  @Override
+  public CustomerResponse customerinfor(HttpServletRequest request){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    Account account=userRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+    List<Customer> customerList = customerRepository.findByAccountId(account.getId());
+    if(customerList.size()==0) throw  new CustomerNotFoundException();
+    Customer customer=customerList.get(0);
+    return  new CustomerResponse(customer.getId(),customer.getIdentityCardNumber(),customer.getAccount(),customer.getAccountNumber(),customer.getPin(),customer.getBalance(),customer.getEmail(),customer.getPhoneNumber(),customer.getDob(),customer.getFullName(),customer.getAddress(),customer.getGender(),customer.getCareer(),customer.getIncome());
   }
 
 }
