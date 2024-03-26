@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public RegisterResponse register(RegisterRequest registerRequest){
     Customer customer= customerRepository.findByIdentityCardNumber(registerRequest.getIdentityCardNumber()).orElseThrow(() -> new CustomerNotFoundException());
-    if(customer.getAccount()==null) throw new CustomerAlreadyExistException();
+    if(customer.getAccount()!=null) throw new CustomerAlreadyExistException();
     if (!customer.getAccountNumber().equals(registerRequest.getAccountNumber())) {
       throw new CustomerBadRequestException("account number is conflic");
     }else if(!customer.getPhoneNumber().equals(registerRequest.getPhoneNumber())){

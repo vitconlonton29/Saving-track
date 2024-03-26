@@ -32,7 +32,7 @@ public class VerifyServiceImpl implements VerifyService {
     @Override
     public VerifyResponse verify(VerifyRequest verifyRequest){
         Customer customer= customerRepository.findByIdentityCardNumber(verifyRequest.getIdentityCardNumber()).orElseThrow(() -> new CustomerNotFoundException());
-        if(customer.getAccount()==null) throw new CustomerAlreadyExistException();
+        if(customer.getAccount()!=null) throw new CustomerAlreadyExistException();
         List<Otp> otpList=otpService.findLatestOtpByCustomerId(customer.getId());
         if(otpList.size()==0){
             throw new OtpNotFoundException();
@@ -41,14 +41,16 @@ public class VerifyServiceImpl implements VerifyService {
         LocalDateTime dateTime2 = otpList.get(0).getDateTimeCreate();
         Duration duration = Duration.between(dateTime1, dateTime2);
         long seconds = Math.abs(duration.getSeconds());
-        if(seconds>30 ||!otpList.get(0).getCode().equals(verifyRequest.getCode())){
+        if(seconds>500 ||!otpList.get(0).getCode().equals(verifyRequest.getCode())){
             throw  new OtpNotFoundException();
         }
         Account newAccount = new Account();
         newAccount.setRole("user");
         newAccount.setUsername(verifyRequest.username);
         newAccount.setPassword(new BCryptPasswordEncoder().encode(verifyRequest.getPassword()));
-        accountRepository.save(newAccount);
+        Account account=accountRepository.save(newAccount);
+        customer.setAccount(account);
+        customerRepository.save(customer);
         return new VerifyResponse("success");
     }
 
