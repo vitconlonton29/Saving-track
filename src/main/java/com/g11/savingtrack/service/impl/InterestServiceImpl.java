@@ -66,9 +66,9 @@ public class InterestServiceImpl implements InterestService {
       long numberOfDays = calculateDayDifference(startDate, endDate);
       log.info("so ngay du:{}", numberOfDays);
       interest = (long) Math.ceil((amount * defaultRate / 100 / 365 * numberOfDays));
-      amount += interest;
-    }
 
+    }
+    amount += interest;
 
     return new InterestResponse(request.getAmount(), amount - request.getAmount(), amount);
   }
