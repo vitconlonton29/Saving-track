@@ -26,26 +26,31 @@ import static com.g11.savingtrack.constants.PassbookManagerConstants.MessageCode
 public class AuthController {
 
     @Autowired
-    private AccountService userService;
+    private AccountService accountService;
     @Autowired
     private VerifyService verifyService;
 
+    // Đăng Nhập
     @PostMapping("login")
     public ResponseGeneral<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-//        System.out.println(new BCryptPasswordEncoder().encode("amdin"));
+        System.out.println(new BCryptPasswordEncoder().encode("amdin"));
         return ResponseGeneral.ofCreated(
                 SUCCESS,
-                userService.login(loginRequest.getUsername(), loginRequest.getPassword())
+                accountService.login(loginRequest.getUsername(), loginRequest.getPassword())
         );
     }
+
+    // Đăng ký để nhận otp
     @PostMapping("register")
     public ResponseGeneral<RegisterResponse> register(@RequestBody RegisterRequest registerRequest) {
 
         return ResponseGeneral.ofCreated(
                 SUCCESS,
-                userService.register(registerRequest)
+                accountService.register(registerRequest)
         );
     }
+
+    // Xác thực mã Otp dùng để đăng ký tài khoản
     @PostMapping("verify")
     public ResponseGeneral<VerifyResponse> verify(@RequestBody VerifyRequest verifyRequest) {
 
@@ -54,12 +59,14 @@ public class AuthController {
                 verifyService.verify(verifyRequest)
         );
     }
+
+    // Lấy thông tin khách hàng đang đăng nhập
     @GetMapping("customer")
     public ResponseGeneral<CustomerResponse> verify(HttpServletRequest request) {
 
         return ResponseGeneral.ofCreated(
                 SUCCESS,
-                userService.customerinfor(request)
+                accountService.customerinfor(request)
         );
     }
 }

@@ -23,29 +23,28 @@ import java.util.List;
 import static com.g11.savingtrack.constants.PassbookManagerConstants.MessageCode.*;
 
 @RestController
-@RequestMapping("api/saving/customers/{id}/passbooks")
+@RequestMapping("api/saving/customers/passbooks")
 @RequiredArgsConstructor
 @Slf4j
 public class PassbookController {
   private final PassbookService passbookService;
   private final WithdrawalService withdrawalService;
 
+  // Tạo sổ tiết kiệm
+  @PreAuthorize("isAuthenticated()")
   @PostMapping
-  public ResponseGeneral<PassbookResponse> create(@PathVariable int id, @RequestBody PassbookRequest request) {
-    log.info("(create) customer_id:{} request:{}", id, request);
 
-    request.setCustomerId(id);
+  public ResponseGeneral<PassbookResponse> create( @RequestBody PassbookRequest request) {
+    log.info("(create) customer_id:{} request:{}", request);
     return ResponseGeneral.ofCreated(
           SUCCESS,
           passbookService.create(request)
     );
   }
 
+  @PreAuthorize("isAuthenticated()")
   @PostMapping("/{passbookId}/withdraw")
-  public ResponseGeneral<WithdrawalResponse> withDraw(@PathVariable int id, @PathVariable int passbookId, @RequestBody WithdrawalRequest request) {
-    log.info("(create) customer_id:{} request:{}", id, request);
-
-    request.setCustomerId(id);
+  public ResponseGeneral<WithdrawalResponse> withDraw(@PathVariable int passbookId, @RequestBody WithdrawalRequest request) {
     request.setPassbookId(passbookId);
 
     return ResponseGeneral.ofCreated(
@@ -54,16 +53,18 @@ public class PassbookController {
     );
   }
 
+  // Lấy toàn bộ sổ của người đang đăng nhập
+  @PreAuthorize("isAuthenticated()")
   @GetMapping
-  public ResponseGeneral<List<PassbookResponse>> list(@PathVariable int id) {
+  public ResponseGeneral<List<PassbookResponse>> list() {
     log.info("(list)");
 
     return ResponseGeneral.ofCreated(
           SUCCESS,
-          passbookService.list(id)
+          passbookService.list()
     );
   }
-
+  //Lấy chi tiết sổ theo id
   @GetMapping("/{passbookId}")
   public ResponseGeneral<PassbookResponse> detail(@PathVariable int passbookId) {
     log.info("detail");

@@ -2,12 +2,11 @@ package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.WithdrawalRequest;
 import com.g11.savingtrack.dto.response.WithdrawalResponse;
-import com.g11.savingtrack.entity.Customer;
-import com.g11.savingtrack.entity.Otp;
-import com.g11.savingtrack.entity.Passbook;
-import com.g11.savingtrack.entity.Receipt;
+import com.g11.savingtrack.entity.*;
+import com.g11.savingtrack.exception.account.AccountNotFoundException;
 import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
 import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
+import com.g11.savingtrack.repository.AccountRepository;
 import com.g11.savingtrack.repository.CustomerRepository;
 import com.g11.savingtrack.repository.PassbookRepository;
 import com.g11.savingtrack.repository.ReceiptRepository;
@@ -19,9 +18,12 @@ import com.g11.savingtrack.utils.EmailUtils;
 import com.g11.savingtrack.utils.ShortTokenReceipt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -35,6 +37,8 @@ public class WithdrawalServiceImpl implements WithdrawalService {
   private final OtpService otpService;
   private final EmailService emailService;
   private final  JwtUtilities jwtUtilities;
+  private final AccountRepository accountRepository;
+
 
 
   @Override
@@ -42,8 +46,12 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     log.info("(withDraw) request:{}", request);
 
     Passbook passbook = passbookRepository.findById(request.getPassbookId()).orElseThrow(PassbookNotFoundException::new);
-    Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
-    //gui OTP qua mail de xac thuc
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+    List<Customer> customerList = customerRepository.findByAccountId(account.getId());
+    if(customerList.size()==0) throw  new CustomerNotFoundException();
+    Customer customer=customerList.get(0);
     EmailUtils emailUtils= new EmailUtils();
     emailUtils.setSubject("verify rut tien");
     Random random = new Random();

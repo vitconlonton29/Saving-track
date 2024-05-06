@@ -100,7 +100,7 @@ public class AccountServiceImpl implements AccountService {
     EmailUtils emailUtils = new EmailUtils();
     emailUtils.setSubject(customer.getEmail());
     emailUtils.setRecipient(customer.getEmail());
-    emailUtils.setMsgBody("đội ơn bạn đã sử  dụng dịch vụ của chúng tôi mã xác nhận của bạn là "+String.valueOf(rad));
+    emailUtils.setMsgBody("Đội ơn bạn đã sử  dụng dịch vụ của chúng tôi mã xác nhận của bạn là: "+String.valueOf(rad));
     Boolean statusSendMail = emailService.sendSimpleMail(emailUtils);
     Otp otp = new Otp();
     otp.setCustomer(customer);
@@ -110,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
     if(!statusSendMail){
       throw  new CustomerNotFoundException();
     }
-    return new RegisterResponse("succes");
+    return new RegisterResponse("success");
   }
 
   @Override

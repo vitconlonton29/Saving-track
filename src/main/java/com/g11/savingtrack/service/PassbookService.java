@@ -11,7 +11,7 @@ import java.util.List;
 public interface PassbookService {
   PassbookResponse create(PassbookRequest request);
 
-  List<PassbookResponse> list(int id);
+  List<PassbookResponse> list();
   PassbookResponse detail(int id);
   VerifyWithdrawalResponse withdraw(HttpServletRequest request, VerifyWithdrawalRequest verifyWithdrawalRequest, int passbookId);
 }

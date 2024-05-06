@@ -3,6 +3,7 @@ package com.g11.savingtrack.controller;
 import com.g11.savingtrack.dto.Error;
 import com.g11.savingtrack.dto.ResponseGeneral;
 import com.g11.savingtrack.exception.base.BaseException;
+import com.g11.savingtrack.exception.base.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,12 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AdviceController {
   private final MessageSource messageSource;
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ResponseGeneral<Error>> handleNotFoundException(NotFoundException ex, WebRequest webRequest) {
+    return ResponseEntity
+            .status(ex.getStatus())
+            .body(getError(ex.getStatus(), ex.getCode(), webRequest.getLocale(), ex.getParams()));
+  }
 
   @ExceptionHandler (value = {BaseException.class})
   public ResponseEntity<ResponseGeneral<Error>> handleFinanceBaseException(
@@ -33,6 +40,7 @@ public class AdviceController {
           .status(ex.getStatus())
           .body(getError(ex.getStatus(), ex.getCode(), webRequest.getLocale(), ex.getParams()));
   }
+
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ResponseGeneral<Error>> handleValidationExceptions(

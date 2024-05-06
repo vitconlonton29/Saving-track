@@ -43,12 +43,14 @@ public class PassbookServiceImpl implements PassbookService {
   @Override
   public PassbookResponse create(PassbookRequest request) {
     log.info("(create) request:{}", request);
-
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+    List<Customer> customerList = customerRepository.findByAccountId(account.getId());
+    if(customerList.size()==0) throw  new CustomerNotFoundException();
+    Customer customer=customerList.get(0);
     Passbook passbook = Passbook.from(request);
-
-    Optional<Customer> customer = customerRepository.findById(request.getCustomerId());
-    if (customer.isEmpty()) throw new CustomerNotFoundException();
-    passbook.setCustomer(customer.get());
+    passbook.setCustomer(customer);
 
     Optional<SavingProduct> savingProduct = savingProductRepository.findById(request.getSavingProductId());
     if (savingProduct.isEmpty()) throw new SavingProductNotFoundException();
@@ -59,10 +61,15 @@ public class PassbookServiceImpl implements PassbookService {
   }
 
   @Override
-  public List<PassbookResponse> list(int id) {
+  public List<PassbookResponse> list() {
     log.info("(list)");
-
-    List<Passbook> passbooks = passbookRepository.findAllByCustomerId(id);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+    List<Customer> customerList = customerRepository.findByAccountId(account.getId());
+    if(customerList.size()==0) throw  new CustomerNotFoundException();
+    Customer customer=customerList.get(0);
+    List<Passbook> passbooks = passbookRepository.findAllByCustomerId(customer.getId());
     List<PassbookResponse> passbookResponses = new ArrayList<>();
     for (Passbook p : passbooks) {
       passbookResponses.add(PassbookResponse.from(p));
