@@ -2,6 +2,7 @@ package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.InterestRequest;
 import com.g11.savingtrack.dto.response.InterestResponse;
+import com.g11.savingtrack.entity.Passbook;
 import com.g11.savingtrack.repository.SavingProductRepository;
 import com.g11.savingtrack.service.InterestService;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +73,33 @@ public class InterestServiceImpl implements InterestService {
 
     return new InterestResponse(request.getAmount(), amount - request.getAmount(), amount);
   }
+
+  //Tinh lai suat dua tren passbook
+  public Long calculator(Passbook passbook) {
+    log.info("(calculator) passbook:{}", passbook);
+    int month = passbook.getSavingProduct().getTerm();
+
+    double rate = passbook.getSavingProduct().getInterestRate();
+    long amount = passbook.getAmount();
+    long interest = 0;
+    Date startDate = passbook.getCreatedAt();
+
+    //neu month = 0 => tinh lai theo lai suat khong ky han
+    if (month == 0) {
+      interest = 0;
+    } else {
+      //tinh so ngay trong tung ky han
+      int days = countDaysFromDate(startDate, month);
+      log.info("so ngay trong tung ky han: {}", days);
+      //tinh lai
+      interest = (long) Math.ceil((amount * rate / 100 / 365) * days);
+      log.info("lai trong 1 ky han tiep theo: {}", interest);
+
+    }
+    return interest;
+
+  }
+
 
   private int calculateMonthDifference(Date startDate, Date endDate) {
 

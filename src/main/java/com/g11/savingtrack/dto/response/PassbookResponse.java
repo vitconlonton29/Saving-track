@@ -18,6 +18,7 @@ public class PassbookResponse {
   private long amount;
   private int paymentMethod;
   private Date createdAt;
+  private long interest;
 
   public static PassbookResponse from(Passbook passbook) {
     PassbookResponse pr = new PassbookResponse();

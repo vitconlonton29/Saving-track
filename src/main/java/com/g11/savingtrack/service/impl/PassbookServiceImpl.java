@@ -1,7 +1,9 @@
 package com.g11.savingtrack.service.impl;
 
+import com.g11.savingtrack.dto.request.InterestRequest;
 import com.g11.savingtrack.dto.request.PassbookRequest;
 import com.g11.savingtrack.dto.request.VerifyWithdrawalRequest;
+import com.g11.savingtrack.dto.response.InterestResponse;
 import com.g11.savingtrack.dto.response.PassbookResponse;
 import com.g11.savingtrack.dto.response.VerifyWithdrawalResponse;
 import com.g11.savingtrack.entity.*;
@@ -12,6 +14,7 @@ import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import com.g11.savingtrack.exception.savingproduct.SavingProductNotFoundException;
 import com.g11.savingtrack.repository.*;
 import com.g11.savingtrack.security.JwtUtilities;
+import com.g11.savingtrack.service.InterestService;
 import com.g11.savingtrack.service.PassbookService;
 import com.g11.savingtrack.utils.ShortTokenReceipt;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +42,7 @@ public class PassbookServiceImpl implements PassbookService {
   private final OtpRepository otpRepository;
   private final AccountRepository accountRepository;
   private final ReceiptRepository receiptRepository;
+  private final InterestService interestService;
 
   @Override
   public PassbookResponse create(PassbookRequest request) {
@@ -84,7 +88,12 @@ public class PassbookServiceImpl implements PassbookService {
 
     Passbook passbook = passbookRepository.findById(passbookId).orElseThrow(PassbookNotFoundException::new);
 
-    return PassbookResponse.from(passbook);
+    Long interest = interestService.calculator(passbook);
+
+    PassbookResponse passbookResponse = PassbookResponse.from(passbook);
+    passbookResponse.setInterest(interest);
+
+    return passbookResponse;
   }
 
 
