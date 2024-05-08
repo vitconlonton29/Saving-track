@@ -47,11 +47,15 @@ public class PassbookServiceImpl implements PassbookService {
   @Override
   public PassbookResponse create(PassbookRequest request) {
     log.info("(create) request:{}", request);
+
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getName();
+
     Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+
     List<Customer> customerList = customerRepository.findByAccountId(account.getId());
     if(customerList.size()==0) throw  new CustomerNotFoundException();
+
     Customer customer=customerList.get(0);
     Passbook passbook = Passbook.from(request);
     passbook.setCustomer(customer);
