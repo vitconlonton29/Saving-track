@@ -9,6 +9,7 @@ import com.g11.savingtrack.dto.response.VerifyWithdrawalResponse;
 import com.g11.savingtrack.entity.*;
 import com.g11.savingtrack.exception.Otp.OtpNotFoundException;
 import com.g11.savingtrack.exception.account.AccountNotFoundException;
+import com.g11.savingtrack.exception.account.IncomeNotEnoughtMoney;
 import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
 import com.g11.savingtrack.exception.passbook.PassbookNotFoundException;
 import com.g11.savingtrack.exception.savingproduct.SavingProductNotFoundException;
@@ -47,10 +48,8 @@ public class PassbookServiceImpl implements PassbookService {
   @Override
   public PassbookResponse create(PassbookRequest request) {
     log.info("(create) request:{}", request);
-
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getName();
-
     Account account=accountRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
 
     List<Customer> customerList = customerRepository.findByAccountId(account.getId());
@@ -63,9 +62,12 @@ public class PassbookServiceImpl implements PassbookService {
     Optional<SavingProduct> savingProduct = savingProductRepository.findById(request.getSavingProductId());
     if (savingProduct.isEmpty()) throw new SavingProductNotFoundException();
     passbook.setSavingProduct(savingProduct.get());
-
+    if(customer.getIncome()<request.getAmount()){
+        throw  new IncomeNotEnoughtMoney();
+    }
+    customer.setIncome(customer.getIncome()-request.getAmount());
+    customerRepository.save(customer);
     return PassbookResponse.from(passbookRepository.save(passbook));
-
   }
 
   @Override

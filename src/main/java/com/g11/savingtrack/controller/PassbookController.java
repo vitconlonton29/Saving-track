@@ -33,7 +33,6 @@ public class PassbookController {
   // Tạo sổ tiết kiệm
   @PreAuthorize("isAuthenticated()")
   @PostMapping
-
   public ResponseGeneral<PassbookResponse> create( @RequestBody PassbookRequest request) {
     log.info("(create) customer_id:{} request:{}", request);
     return ResponseGeneral.ofCreated(
