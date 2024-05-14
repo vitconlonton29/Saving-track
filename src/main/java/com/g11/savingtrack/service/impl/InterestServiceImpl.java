@@ -33,30 +33,32 @@ public class InterestServiceImpl implements InterestService {
 
     //lai suat khong ky han
     double defaultRate = savingProductRepository.findByTerm(0).getInterestRate();
+    log.info("defaultRate:{}", defaultRate);
 
 
     //neu month = 0 => tinh lai theo lai suat khong ky han
     if (month == 0) {
       long numberOfDays = calculateDayDifference(startDate, endDate);
       interest = (long) Math.ceil((amount * numberOfDays * defaultRate / 100) / 365);
+      log.info("numberOfDays:{}", numberOfDays);
     } else {
 
       //tinh so thang
       int diffMonth = calculateMonthDifference(startDate, endDate);
-      log.info("so Thang: {}", diffMonth);
+      //log.info("so Thang: {}", diffMonth);
 
       while (diffMonth >= month) {
         //tinh so ngay trong tung ky han
         int days = countDaysFromDate(startDate, month);
-        log.info("so ngay trong tung ky han: {}", days);
+        // log.info("so ngay trong tung ky han: {}", days);
         //tinh lai
         interest = (long) Math.ceil((amount * rate / 100 / 365) * days);
-        log.info("lai trong 1 ky han: {}", interest);
+        //log.info("lai trong 1 ky han: {}", interest);
         //neu phuong thuc tra la la cong goc
         if (paymentMethod == 1) {
           amount += interest;
         }
-        log.info("goc sau cong: {}", amount);
+        //log.info("goc sau cong: {}", amount);
         //ngay tinh = ngay bat dau ky han truoc + so thang cua ky han
         startDate = addMonthsToDate(startDate, month);
         //so thang tru di so thang cua ky han
@@ -65,7 +67,7 @@ public class InterestServiceImpl implements InterestService {
 
       //so ngay du
       long numberOfDays = calculateDayDifference(startDate, endDate);
-      log.info("so ngay du:{}", numberOfDays);
+      //log.info("so ngay du:{}", numberOfDays);
       interest = (long) Math.ceil((amount * defaultRate / 100 / 365 * numberOfDays));
 
     }
