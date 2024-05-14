@@ -70,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
   public LoginResponse login(String username, String password) {
     try {
       Account user = iUserRepository.findByUsername(username)
-              .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+              .orElseThrow(() -> new AccountNotFoundException());
       Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(username, password)
       );
@@ -79,9 +79,9 @@ public class AccountServiceImpl implements AccountService {
       rolesNames.add(user.getRole());
       String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
       return new LoginResponse(token);
-    } catch (UsernameNotFoundException ex) {
+    } catch (AccountNotFoundException ex) {
       logger.error("User not found: {}", username, ex);
-      throw new UsernameNotFoundException("User not found"); // Re-throw để xử lý ở nơi gọi
+      throw new AccountNotFoundException(); // Re-throw để xử lý ở nơi gọi
     } catch (BadCredentialsException ex) {
       logger.error("Invalid username or password for user: {}", username, ex);
       throw new UsernamePasswordIncorrectException();

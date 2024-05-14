@@ -2,6 +2,7 @@ package com.g11.savingtrack.controller;
 
 import com.g11.savingtrack.dto.Error;
 import com.g11.savingtrack.dto.ResponseGeneral;
+import com.g11.savingtrack.exception.account.AccountNotFoundException;
 import com.g11.savingtrack.exception.account.IncomeNotEnoughtMoney;
 import com.g11.savingtrack.exception.base.BaseException;
 import com.g11.savingtrack.exception.base.NotFoundException;
@@ -31,7 +32,11 @@ public class AdviceController {
     return new ResponseEntity<>(ResponseGeneral.of(400, "Bad Request", ex.getMes()), HttpStatus.BAD_REQUEST);
 
   }
+  @ExceptionHandler(AccountNotFoundException.class)
+  public ResponseEntity<ResponseGeneral<String>> handleNotFoundException(AccountNotFoundException ex) {
+    return new ResponseEntity<>(ResponseGeneral.of(404, "Not Found", ex.getMess()), HttpStatus.BAD_REQUEST);
 
+  }
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResponseGeneral<Error>> handleNotFoundException(NotFoundException ex, WebRequest webRequest) {
     return ResponseEntity
