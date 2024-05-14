@@ -5,6 +5,8 @@ import com.g11.savingtrack.entity.Account;
 import com.g11.savingtrack.entity.Customer;
 import com.g11.savingtrack.entity.Otp;
 import com.g11.savingtrack.exception.customer.CustomerAlreadyExistException;
+import com.g11.savingtrack.exception.customer.CustomerBadRequestException;
+import com.g11.savingtrack.exception.customer.CustomerNotFoundException;
 import com.g11.savingtrack.repository.CustomerRepository;
 import com.g11.savingtrack.service.AccountService;
 import com.g11.savingtrack.service.EmailService;
@@ -20,9 +22,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,7 +79,14 @@ public class RegisterServiceTest {
         verify(emailService, times(1)).sendSimpleMail(any(EmailUtils.class));
         verify(otpService, times(1)).saveOtp(any(Otp.class));
     }
+    @Test(expected = CustomerNotFoundException.class)
+    public void testRegister_errorIdentityCardNumberNotFound() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setIdentityCardNumber("123456789");
+        when(customerRepository.findByIdentityCardNumber("123456789")).thenReturn(Optional.empty());
 
+        accountService.register(registerRequest);
+    }
     @Test(expected = CustomerAlreadyExistException.class)
     public void testRegisterWithExistingAccount() {
         RegisterRequest registerRequest = new RegisterRequest();
@@ -92,4 +106,59 @@ public class RegisterServiceTest {
 
         accountService.register(registerRequest);
     }
+    @Test
+    public void testRegister_AccountNumberConflict() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setIdentityCardNumber("123456789");
+        registerRequest.setAccountNumber("account123");
+        registerRequest.setPhoneNumber("0987654321");
+        Customer customer = new Customer();
+        customer.setAccount(null);
+        customer.setAccountNumber("differentAccount");
+
+        when(customerRepository.findByIdentityCardNumber(anyString())).thenReturn(Optional.of(customer));
+
+        assertThrows(CustomerBadRequestException.class, () -> {
+            accountService.register(registerRequest);
+        }, "account number is conflic");
+    }
+    @Test
+    public void testRegister_EmailSendFailure() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setIdentityCardNumber("123456789");
+        registerRequest.setAccountNumber("account123");
+        registerRequest.setPhoneNumber("0987654321");
+        Customer customer = new Customer();
+        customer.setAccount(null);
+        customer.setAccountNumber("account123");
+        customer.setPhoneNumber("0987654321");
+
+        when(customerRepository.findByIdentityCardNumber(anyString())).thenReturn(Optional.of(customer));
+        when(emailService.sendSimpleMail(any())).thenReturn(false);
+
+        assertThrows(CustomerNotFoundException.class, () -> {
+            accountService.register(registerRequest);
+        });
+    }
+    @Test
+    public void testRegister_PhoneNumberConflict() {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setIdentityCardNumber("123456789");
+        registerRequest.setAccountNumber("account123");
+        registerRequest.setPhoneNumber("0987654321");
+        Customer customer = new Customer();
+        customer.setAccount(null);
+        customer.setAccountNumber("account123");
+        customer.setPhoneNumber("differentPhoneNumber");
+
+        when(customerRepository.findByIdentityCardNumber(anyString())).thenReturn(Optional.of(customer));
+
+        assertThrows(CustomerBadRequestException.class, () -> {
+            accountService.register(registerRequest);
+        }, "phong number is conflic");
+    }
+
+
+
+
 }
