@@ -14,7 +14,6 @@ import java.util.Date;
 public class CustomerResponse {
     private int id;
     private String identityCardNumber;
-    private Account account;
     private String accountNumber;
     private String pin;
     private Long balance;

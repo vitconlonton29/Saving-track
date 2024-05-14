@@ -14,9 +14,6 @@ public class Customer {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   private String identityCardNumber;
-  @ManyToOne
-  @JoinColumn(name = "account_id")
-  private Account account;
   private String accountNumber;
   private String pin;
   private Long balance;

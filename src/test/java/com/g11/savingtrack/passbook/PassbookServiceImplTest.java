@@ -10,6 +10,7 @@ import com.g11.savingtrack.repository.*;
 import com.g11.savingtrack.security.JwtUtilities;
 import com.g11.savingtrack.service.InterestService;
 import com.g11.savingtrack.service.impl.PassbookServiceImpl;
+import com.g11.savingtrack.utils.DateUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,24 +72,26 @@ class PassbookServiceImplTest {
   }
 
   @Test
-  void createPassbook() {
-    // Chuẩn bị dữ liệu cho bài kiểm tra
+  public void createPassbook_ValidDTO(){
     PassbookRequest passbookRequest = new PassbookRequest();
-    passbookRequest.setSavingProductId(1);
+    passbookRequest.setSavingProductId(2);
+    passbookRequest.setAmount(10000000);
+    passbookRequest.setCreatedAt(new Date());
+    passbookRequest.setPaymentMethod(1);
 
     Authentication authentication = mock(Authentication.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test_user");
+    when(authentication.getName()).thenReturn("Hau2903");
 
     Account account = new Account();
-    account.setId(1);
-    when(accountRepository.findByUsername("test_user")).thenReturn(java.util.Optional.of(account));
+    account.setId(2);
+    when(accountRepository.findByUsername("Hau2903")).thenReturn(java.util.Optional.of(account));
 
     Customer customer = new Customer();
-    customer.setId(1);
+    customer.setId(2);
     List<Customer> customers = new ArrayList<>();
     customers.add(customer);
-    when(customerRepository.findByAccountId(1)).thenReturn(customers);
+    when(customerRepository.findByAccountId(2)).thenReturn(customers);
 
     SavingProduct savingProduct = new SavingProduct();
     savingProduct.setId(1);
@@ -96,7 +99,7 @@ class PassbookServiceImplTest {
 
     Passbook passbook = new Passbook();
     passbook.setCustomer(customer);
-    passbook.setId(1);
+    passbook.setId(2);
     passbook.setSavingProduct(savingProduct);
     when(passbookRepository.save(any(Passbook.class))).thenReturn(passbook);
 
@@ -104,7 +107,13 @@ class PassbookServiceImplTest {
     PassbookResponse passbookResponse = passbookService.create(passbookRequest);
 
     // Kiểm tra kết quả
-    assertEquals(1, passbookResponse.getId());
+    assertEquals(2, passbookResponse.getId());
+    assertEquals(2, passbookResponse.getId());
+  }
+
+  @Test
+  void createPassbook() {
+
   }
 
   @Test
