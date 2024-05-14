@@ -64,7 +64,7 @@ public class AccountServiceTest {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
     }
-
+    // Test Login
     @Test
     public void testLogin_Success() {
         // Arrange
@@ -127,7 +127,7 @@ public class AccountServiceTest {
     }
 
 
-// Test Hàm khác:
+    // Test CustomerInfor
     @Test
     public void testCustomerInfor_AccountNotFound() {
         when(authentication.getName()).thenReturn("user");
@@ -156,7 +156,6 @@ public class AccountServiceTest {
     public void testCustomerInfor_Success() {
         Account account = new Account();
         account.setId(1);
-
         Customer customer = new Customer();
         customer.setId(1);
         customer.setIdentityCardNumber("123456789");
