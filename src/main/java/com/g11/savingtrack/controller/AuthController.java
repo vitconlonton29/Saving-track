@@ -23,6 +23,7 @@ import static com.g11.savingtrack.constants.PassbookManagerConstants.MessageCode
 
 @RestController
 @RequestMapping("/api/saving")
+@CrossOrigin("*")
 public class AuthController {
 
     @Autowired
@@ -33,7 +34,7 @@ public class AuthController {
     // Đăng Nhập
     @PostMapping("login")
     public ResponseGeneral<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        System.out.println(new BCryptPasswordEncoder().encode("amdin"));
+        System.out.println(new BCryptPasswordEncoder().encode("Tuan22122002"));
         return ResponseGeneral.ofCreated(
                 SUCCESS,
                 accountService.login(loginRequest.getUsername(), loginRequest.getPassword())

@@ -2,6 +2,7 @@ package com.g11.savingtrack.controller;
 
 import com.g11.savingtrack.dto.Error;
 import com.g11.savingtrack.dto.ResponseGeneral;
+import com.g11.savingtrack.exception.account.IncomeNotEnoughtMoney;
 import com.g11.savingtrack.exception.base.BaseException;
 import com.g11.savingtrack.exception.base.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -24,8 +25,15 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AdviceController {
   private final MessageSource messageSource;
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ResponseGeneral<Error>> handleNotFoundException(NotFoundException ex, WebRequest webRequest) {
+
+  @ExceptionHandler(IncomeNotEnoughtMoney.class)
+  public ResponseEntity<ResponseGeneral<String>> handleNotFoundException(IncomeNotEnoughtMoney ex) {
+    return new ResponseEntity<>(ResponseGeneral.of(400, "Bad Request", ex.getMes()), HttpStatus.BAD_REQUEST);
+
+  }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ResponseGeneral<Error>> handleNotFoundException(NotFoundException ex, WebRequest webRequest) {
     return ResponseEntity
             .status(ex.getStatus())
             .body(getError(ex.getStatus(), ex.getCode(), webRequest.getLocale(), ex.getParams()));

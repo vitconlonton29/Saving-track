@@ -2,6 +2,7 @@ package com.g11.savingtrack.service.impl;
 
 import com.g11.savingtrack.dto.request.RegisterRequest;
 import com.g11.savingtrack.dto.response.CustomerResponse;
+import org.slf4j.Logger;
 import com.g11.savingtrack.dto.response.LoginResponse;
 import com.g11.savingtrack.dto.response.RegisterResponse;
 import com.g11.savingtrack.entity.Account;
@@ -20,8 +21,10 @@ import com.g11.savingtrack.service.EmailService;
 import com.g11.savingtrack.service.OtpService;
 import com.g11.savingtrack.utils.EmailUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -37,6 +40,8 @@ import java.util.Random;
 @Service
 
 public class AccountServiceImpl implements AccountService {
+  private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+
   @Autowired
   private EmailService emailService;
   @Autowired
@@ -52,37 +57,40 @@ public class AccountServiceImpl implements AccountService {
   @Autowired
   private final JwtUtilities jwtUtilities;
 
-  public AccountServiceImpl(AccountRepository userRepository, AuthenticationManager authenticationManager, AccountRepository iUserRepository, JwtUtilities jwtUtilities) {
+  public AccountServiceImpl(AccountRepository userRepository, AuthenticationManager authenticationManager, AccountRepository iUserRepository, JwtUtilities jwtUtilities,CustomerRepository customerRepository) {
     this.userRepository = userRepository;
     this.authenticationManager = authenticationManager;
     this.iUserRepository = iUserRepository;
     this.jwtUtilities = jwtUtilities;
+    this.customerRepository=customerRepository;
 
   }
 
   @Override
   public LoginResponse login(String username, String password) {
     try {
+      Account user = iUserRepository.findByUsername(username)
+              .orElseThrow(() -> new UsernameNotFoundException("User not found"));
       Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(username, password)
       );
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      Account user = iUserRepository.findByUsername(authentication.getName())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
       List<String> rolesNames = new ArrayList<>();
       rolesNames.add(user.getRole());
       String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
       return new LoginResponse(token);
     } catch (UsernameNotFoundException ex) {
-      // Trường hợp không tìm thấy người dùng
-      throw ex; // Re-throw ngoại lệ để xử lý ở nơi gọi
+      logger.error("User not found: {}", username, ex);
+      throw new UsernameNotFoundException("User not found"); // Re-throw để xử lý ở nơi gọi
+    } catch (BadCredentialsException ex) {
+      logger.error("Invalid username or password for user: {}", username, ex);
+      throw new UsernamePasswordIncorrectException();
     } catch (AuthenticationException ex) {
-      // Trường hợp sai tên người dùng hoặc mật khẩu
+      logger.error("Authentication failed for user: {}", username, ex);
       throw new UsernamePasswordIncorrectException();
     } catch (Exception ex) {
-      // Trường hợp lỗi ngoại lệ khác
-      System.out.println("ạih");
-      throw new RuntimeException();
+      logger.error("An unexpected error occurred during login for user: {}", username, ex);
+      throw new RuntimeException("An unexpected error occurred during login", ex);
     }
   }
 
@@ -118,10 +126,16 @@ public class AccountServiceImpl implements AccountService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getName();
     Account account=userRepository.findByUsername(username).orElseThrow(AccountNotFoundException::new);
+
     List<Customer> customerList = customerRepository.findByAccountId(account.getId());
-    if(customerList.size()==0) throw  new CustomerNotFoundException();
+    if (customerList.isEmpty()) {
+      logger.info("No customers found for account ID: {}", account.getId());
+      throw new CustomerNotFoundException();
+    }
     Customer customer=customerList.get(0);
     return  new CustomerResponse(customer.getId(),customer.getIdentityCardNumber(),customer.getAccount(),customer.getAccountNumber(),customer.getPin(),customer.getBalance(),customer.getEmail(),customer.getPhoneNumber(),customer.getDob(),customer.getFullName(),customer.getAddress(),customer.getGender(),customer.getCareer(),customer.getIncome());
   }
+
+
 
 }

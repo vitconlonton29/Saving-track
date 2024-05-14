@@ -65,33 +65,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     otp.setDateTimeCreate(LocalDateTime.now());
     Otp otpNew= otpService.saveOtp(otp);
 
-//
-//
-//    long amountWithdraw;
-//    long amount = passbook.getAmount();
-//    long balance = customer.getBalance();
-//
-//    if (request.isAll()) {
-//      amountWithdraw = passbook.getAmount();
-//    } else {
-//      amountWithdraw = request.getAmount();
-//
-//    }
-//
-//
-//    passbook.setAmount(amount - amountWithdraw);
-//    customer.setBalance(balance + amountWithdraw);
-//    passbookRepository.save(passbook);
-//    customerRepository.save(customer);
-//
-//    String code = generateRandomString();
-//
-//    Receipt receipt = new Receipt();
-//    receipt.setAmount(amount);
-//    receipt.setPassbook(passbook);
-//    receipt.setCode(code);
-//    receipt.setCreatedAt(request.getCreatedAt());
-//    receiptRepository.save(receipt);
     ShortTokenReceipt shortTokenReceipt = new ShortTokenReceipt(request.getAmount(),passbook.getId(), otpNew.getId(), request.isAll());
 
     return new WithdrawalResponse(jwtUtilities.generateTokenShort(customer.getEmail(),shortTokenReceipt));
